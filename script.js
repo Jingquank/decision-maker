@@ -4,27 +4,47 @@ const coinContainer = document.querySelector('.coin-container');
 const resultMessage = document.getElementById('result-message');
 let isFlipping = false;
 let currentSide = 0; // 0: head, 1: tail
+let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 // Easing function for smooth ease-out
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-// Subtle movement, rotation, and tilt towards cursor
-document.addEventListener('mousemove', (e) => {
+// Handle both mouse and touch movement
+function handleMovement(x, y) {
   if (isFlipping) return;
   const centerX = window.innerWidth / 2;
   const centerY = window.innerHeight / 2;
   const maxMove = 20; // subtle movement
   const maxRotate = 10; // subtle rotation
   const maxTilt = 20; // subtle tilt
-  const x = (e.clientX - centerX) / centerX;
-  const y = (e.clientY - centerY) / centerY;
-  coinContainer.style.transform = `translateX(calc(-50% + ${x * maxMove}px)) translateY(${y * maxMove}px) rotateZ(${x * maxRotate}deg) rotateX(${-y * maxTilt}deg) rotateY(${x * maxTilt}deg)`;
+  const relativeX = (x - centerX) / centerX;
+  const relativeY = (y - centerY) / centerY;
+  coinContainer.style.transform = `translate(-50%, -50%) translateX(${relativeX * maxMove}px) translateY(${relativeY * maxMove}px) rotateZ(${relativeX * maxRotate}deg) rotateX(${-relativeY * maxTilt}deg) rotateY(${relativeX * maxTilt}deg)`;
+}
+
+// Mouse events
+document.addEventListener('mousemove', (e) => {
+  if (isTouchDevice) return; // Skip mouse events on touch devices
+  handleMovement(e.clientX, e.clientY);
 });
+
 document.addEventListener('mouseleave', () => {
+  if (isFlipping || isTouchDevice) return;
+  coinContainer.style.transform = 'translate(-50%, -50%)';
+});
+
+// Touch events
+document.addEventListener('touchmove', (e) => {
+  e.preventDefault(); // Prevent scrolling while interacting with coin
+  const touch = e.touches[0];
+  handleMovement(touch.clientX, touch.clientY);
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
   if (isFlipping) return;
-  coinContainer.style.transform = 'translateX(-50%)';
+  coinContainer.style.transform = 'translate(-50%, -50%)';
 });
 
 // Flip animation
