@@ -21,7 +21,7 @@ function handleMovement(x, y) {
   const maxTilt = 20; // subtle tilt
   const relativeX = (x - centerX) / centerX;
   const relativeY = (y - centerY) / centerY;
-  coinContainer.style.transform = `translate(-50%, -50%) translateX(${relativeX * maxMove}px) translateY(${relativeY * maxMove}px) rotateZ(${relativeX * maxRotate}deg) rotateX(${-relativeY * maxTilt}deg) rotateY(${relativeX * maxTilt}deg)`;
+  coinContainer.style.transform = `translateX(${relativeX * maxMove}px) translateY(${relativeY * maxMove}px) rotateZ(${relativeX * maxRotate}deg) rotateX(${-relativeY * maxTilt}deg) rotateY(${relativeX * maxTilt}deg)`;
 }
 
 // Mouse events
@@ -32,7 +32,7 @@ document.addEventListener('mousemove', (e) => {
 
 document.addEventListener('mouseleave', () => {
   if (isFlipping || isTouchDevice) return;
-  coinContainer.style.transform = 'translate(-50%, -50%)';
+  coinContainer.style.transform = 'none';
 });
 
 // Touch events
@@ -44,7 +44,7 @@ document.addEventListener('touchmove', (e) => {
 
 document.addEventListener('touchend', () => {
   if (isFlipping) return;
-  coinContainer.style.transform = 'translate(-50%, -50%)';
+  coinContainer.style.transform = 'none';
 });
 
 // Flip animation
